@@ -3,11 +3,11 @@ on: [workflow_dispatch]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     
-    - name: Install and Build
+    - name: Debug Build
       run: |
         git clone https://github.com/theos/theos.git ~/theos
         mkdir -p ~/theos/sdks
@@ -16,13 +16,21 @@ jobs:
         tar -xf iPhoneOS13.7.sdk.tar.xz
         cd 
         export THEOS=~/theos
-        make SDK=iphoneos13.7 || true
+        echo "=== FILES ==="
+        find . -name "*.m" -o -name "*.x" -o -name "Makefile"
+        echo "=== BUILD ==="
+        make SDK=iphoneos13.7 2>&1 | tee build.log
+        echo "=== RESULTS ==="
+        find . -name "*.dylib" || echo "NO DYLIB"
+        ls -la obj/ || echo "NO OBJ"
+        cat build.log
         
-    - name: Upload Results
-      uses: actions/upload-artifact@v4
+    - name: Upload All
+      uses: actions/upload-artifact@v3
       with:
-        name: BTLoader
+        name: debug
         path: |
+          build.log
           obj/
           .theos/
-        if-no-files-found: warn
+        retention-days: 1
