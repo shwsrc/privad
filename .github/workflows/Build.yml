@@ -5,7 +5,7 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Install Theos
       run: |
@@ -18,16 +18,18 @@ jobs:
         wget https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS13.7.sdk.tar.xz
         tar -xf iPhoneOS13.7.sdk.tar.xz -C ~/theos/sdks/
         
+    - name: Install Dependencies
+      run: |
+        brew install llvm
+        
     - name: Build BTLoader
       run: |
-        cd ~/theos/sdks
-        wget https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS13.7.sdk.tar.xz
-        tar -xf iPhoneOS13.7.sdk.tar.xz
         cd 
+        export THEOS=~/theos
         make SDK=iphoneos13.7 CFLAGS="-Wno-error -Wno-deprecated"
         
     - name: Upload BTLoader.dylib
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: BTLoader
         path: obj/BTLoader.dylib
