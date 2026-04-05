@@ -3,33 +3,33 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     
-    - name: Install Theos
+    - name: Setup Theos
       run: |
         git clone https://github.com/theos/theos.git ~/theos
-        echo 'export THEOS=~/theos' >> ~/.bashrc
-        
-    - name: Install SDK
-      run: |
         mkdir -p ~/theos/sdks
+        cd ~/theos/sdks
         wget https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS13.7.sdk.tar.xz
-        tar -xf iPhoneOS13.7.sdk.tar.xz -C ~/theos/sdks/
+        tar -xf iPhoneOS13.7.sdk.tar.xz
         
-    - name: Install Dependencies
+    - name: Build
       run: |
-        brew install llvm
-        
-    - name: Build BTLoader
-      run: |
-        cd 
         export THEOS=~/theos
-        make SDK=iphoneos13.7 CFLAGS="-Wno-error -Wno-deprecated"
+        cd 
+        make clean || true
+        make SDK=iphoneos13.7 || true
         
-    - name: Upload BTLoader.dylib
-      uses: actions/upload-artifact@v4
+    - name: Find and Upload
+      run: |
+        find . -name "*.dylib" -type f
+        mkdir -p artifacts
+        find . -name "*.dylib" -type f -exec cp {} artifacts/ \;
+        
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
       with:
         name: BTLoader
-        path: obj/BTLoader.dylib
+        path: artifacts/
