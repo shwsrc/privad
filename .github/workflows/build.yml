@@ -17,12 +17,14 @@ jobs:
         cd 
         export THEOS=~/theos
         make SDK=iphoneos13.7 2>&1 | tee build.log || true
-        find . -name "*.dylib" -exec cp {} /tmp/ \; || true
-        echo "BUILD AT 04/05/2026 09:45:46" >> /tmp/build-info.txt
+        find . -name "*.dylib" -exec cp {} C:\Users\BCG/ \; || true
+        echo "BUILD AT 04/05/2026 09:47:39" >> C:\Users\BCG/build-info.txt
         
     - name: Upload Results
       uses: actions/upload-artifact@v4
       with:
         name: BTLoader
-        path: /tmp/
+        path: |
+          C:\Users\BCG/*.dylib
+          C:\Users\BCG/build-info.txt
         if-no-files-found: warn
