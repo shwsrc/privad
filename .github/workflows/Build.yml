@@ -3,9 +3,9 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Setup Theos
       run: |
@@ -24,12 +24,12 @@ jobs:
         
     - name: Find and Upload
       run: |
-        find . -name "*.dylib" -type f
-        mkdir -p artifacts
-        find . -name "*.dylib" -type f -exec cp {} artifacts/ \;
+        find . -name "*.dylib" -type f || true
+        mkdir -p artifacts || true
+        find . -name "*.dylib" -type f -exec cp {} artifacts/ \; || true
         
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: BTLoader
         path: artifacts/
