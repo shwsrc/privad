@@ -16,15 +16,13 @@ jobs:
         tar -xf iPhoneOS13.7.sdk.tar.xz
         cd 
         export THEOS=~/theos
-        make SDK=iphoneos13.7 2>&1 | tee build.log || true
-        find . -name "*.dylib" -exec cp {} C:\Users\BCG/ \; || true
-        echo "BUILD AT 04/05/2026 09:47:39" >> C:\Users\BCG/build-info.txt
+        make SDK=iphoneos13.7 || true
         
     - name: Upload Results
       uses: actions/upload-artifact@v4
       with:
         name: BTLoader
         path: |
-          C:\Users\BCG/*.dylib
-          C:\Users\BCG/build-info.txt
+          obj/
+          .theos/
         if-no-files-found: warn
